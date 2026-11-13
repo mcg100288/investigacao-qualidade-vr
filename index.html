@@ -3,359 +3,316 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#111821">
-  <title>Missão Investigação VR — Protótipo de Qualidade</title>
-  <meta name="description" content="Demonstração fictícia de investigação de não conformidades em realidade virtual, compatível com navegadores WebXR.">
+  <meta name="theme-color" content="#111b26">
+  <meta name="description" content="Protótipo de investigação de não conformidade em ambiente 3D e realidade virtual. Cenário e dados fictícios.">
+  <title>Missão Investigação VR | Protótipo de Qualidade v2</title>
   <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
   <style>
-    :root { color-scheme: dark; font-family: system-ui, -apple-system, Segoe UI, sans-serif; }
-    * {box-sizing:border-box}
-    body { margin:0; background:#101923; color:#f6f8fb; }
-    .hud { position:fixed; left:16px; top:16px; z-index:12; width:min(365px, calc(100vw - 32px)); max-height:calc(100dvh - 32px); overflow-y:auto; padding:17px; border:1px solid #364655; border-radius:16px; background:rgba(9,19,29,.94); box-shadow:0 15px 45px #0008; }
-    .eyebrow { color:#fb7272; text-transform:uppercase; letter-spacing:.16em; font-weight:800; font-size:11px; margin:0 0 7px; }
-    h1 {margin:0 0 6px; font-size:23px; line-height:1.15}
-    .subtitle {margin:0 0 13px; color:#b5c5d5; line-height:1.45; font-size:13px}
-    .progress { background:#253240; border-radius:99px; height:8px; overflow:hidden; margin:9px 0 14px; }
-    #fill {width:0%; height:100%; background:linear-gradient(90deg,#d64b4b,#fead5e); transition:width .25s}
-    .evidence {display:flex; align-items:center; gap:9px; font-size:13px; margin:8px 0;}
-    .bullet {display:grid;place-items:center;flex:0 0 24px;height:24px;border-radius:7px;background:#293745;color:#dce5ed;font-weight:800}
-    .evidence.done .bullet {background:#247754;color:#fff}
-    #message {border-left:3px solid #e0a854; background:#1b2b39; min-height:75px; padding:12px; margin:14px 0 12px; font-size:13px;line-height:1.48;white-space:pre-line}
-    .buttons {display:grid; gap:8px}
-    button {cursor:pointer; border:0; border-radius:10px; padding:12px 10px; font-weight:800; letter-spacing:.01em; font-size:13px}
-    button:disabled {opacity:.36;cursor:not-allowed}
-    #vrButton {background:#cf4149;color:white}
-    #stopButton {background:#2b8c63;color:white}
-    #releaseButton {background:#bc3e45;color:white}
-    #reviewButton {background:#385168;color:#fff}
-    #restartButton {background:#273341;color:#c8d5df;border:1px solid #3a4d5d}
-    .hint {font-size:11px;color:#a6b8c6;line-height:1.45;margin:10px 0 0}
-    .tiny {font-size:10px;color:#8295a4;margin:9px 0 0}
-    body.vr-active .hud {display:none}
-    #statusbar { position:fixed;right:15px;bottom:12px;z-index:12; padding:7px 11px;background:#09131dbe;border-radius:8px;color:#afbfce;font-size:12px; }
-    body.vr-active #statusbar {display:none}
-    @media(max-width:700px){.hud{width:min(310px,calc(100vw - 24px));left:12px;top:12px;padding:12px;max-height:55dvh} h1{font-size:19px} .subtitle{font-size:12px}}
+    :root{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color-scheme:dark}
+    *{box-sizing:border-box}
+    body{margin:0;background:#121d28;color:#f7f9fb}
+    .hud{position:fixed;z-index:20;top:14px;left:14px;width:min(338px,calc(100vw - 28px));max-height:calc(100dvh - 28px);overflow-y:auto;border:1px solid #465663;background:rgba(11,22,32,.95);padding:17px;border-radius:16px;box-shadow:0 18px 38px #0008}
+    .tag{font-size:11px;letter-spacing:.12em;color:#ffb2b6;font-weight:800;text-transform:uppercase;margin:0 0 8px}
+    h1{font-size:23px;line-height:1.16;margin:0 0 9px}
+    .intro{font-size:13px;line-height:1.5;color:#c3d3df;margin:0 0 12px}
+    .rule{border-top:1px solid #384956;margin:12px 0}
+    .progress{height:8px;background:#2b3b49;border-radius:9px;margin:9px 0;overflow:hidden}
+    #fill{width:0;height:100%;background:#f5b642;transition:width .2s}
+    .ev{display:flex;align-items:center;gap:9px;margin:9px 0;font-size:13px}
+    .ev .num{flex:0 0 24px;height:24px;border-radius:7px;display:grid;place-items:center;background:#334656;font-weight:800}
+    .ev.done .num{background:#247555}
+    .message{border-left:3px solid #f1bc60;background:#1c3243;border-radius:0 8px 8px 0;padding:11px 12px;font-size:13px;line-height:1.45;min-height:75px;white-space:pre-line}
+    button{border:0;border-radius:9px;cursor:pointer;padding:11px 9px;font:700 13px system-ui;color:#fff}
+    button:disabled{opacity:.37;cursor:not-allowed}
+    .buttons{display:grid;grid-template-columns:1fr;gap:7px;margin-top:11px}
+    #startVR{background:#cd414b}#stop{background:#238365}#release{background:#a63843}#train{background:#39546b}#reset{background:#33414e;border:1px solid #64717c}
+    .hint{font-size:11px;color:#b1c2ce;line-height:1.45;margin:12px 0 0}
+    .minimize{background:transparent;border:1px solid #71818d;color:#d9e2e8;font-size:11px;padding:6px 10px;position:absolute;right:11px;top:11px}
+    #reopen{display:none;position:fixed;z-index:21;left:14px;top:14px;background:#142432;border:1px solid #62717e}
+    body.panel-hidden .hud{display:none}body.panel-hidden #reopen{display:block}
+    body.vr-active .hud,body.vr-active #reopen{display:none}
+    .corner{position:fixed;z-index:11;right:12px;bottom:12px;background:#101e2ac7;border-radius:8px;padding:7px 10px;color:#b7c7d2;font-size:11px;pointer-events:none}
+    body.vr-active .corner{display:none}
+    @media(max-width:680px){.hud{padding:12px;max-height:65dvh}h1{font-size:19px}.intro{font-size:12px}}
   </style>
 </head>
 <body>
-  <main class="hud" aria-label="Controles da missão">
-    <p class="eyebrow">Treinamento demonstrativo • 3D / VR</p>
+  <main class="hud" aria-label="Painel do treinamento">
+    <button class="minimize" id="minimize" type="button">Ocultar painel</button>
+    <p class="tag">Protótipo interno • v2</p>
     <h1>MISSÃO INVESTIGAÇÃO</h1>
-    <p class="subtitle"><strong>Problema:</strong> o cliente pediu o modelo A e recebeu o modelo B. Examine o ambiente, registre 3 evidências e tome uma decisão.</p>
-    <strong id="progressLabel" aria-live="polite">0 de 3 evidências identificadas</strong>
+    <p class="intro"><strong>Problema:</strong> o cliente solicitou a peça A e recebeu a peça B. Identifique <strong>três evidências</strong> e decida como tratar o lote.</p>
+    <strong id="countText">0 de 3 evidências</strong>
     <div class="progress"><div id="fill"></div></div>
-    <div class="evidence" id="ev-pedido"><span class="bullet">1</span><span>Peça e identificação da caixa</span></div>
-    <div class="evidence" id="ev-segregacao"><span class="bullet">2</span><span>Segregação na prateleira</span></div>
-    <div class="evidence" id="ev-expedicao"><span class="bullet">3</span><span>Conferência na expedição</span></div>
-    <div id="message" role="status" aria-live="polite">Use o mouse para olhar ao redor e clique nas áreas com o símbolo ?. Em VR, aponte o controle e pressione o gatilho.</div>
+    <div id="e-pedido" class="ev"><span class="num">1</span>Embalagem e peça</div>
+    <div id="e-segregacao" class="ev"><span class="num">2</span>Segregação do material</div>
+    <div id="e-expedicao" class="ev"><span class="num">3</span>Expedição e registro</div>
+    <div class="rule"></div>
+    <div id="message" class="message" role="status" aria-live="polite">Olhe o cenário e clique nos marcadores amarelos 1, 2 e 3. Você também pode clicar diretamente na peça B.</div>
     <div class="buttons">
-      <button id="vrButton" type="button">ENTRAR EM VR (QUEST 3)</button>
-      <button id="stopButton" type="button" disabled>INTERROMPER LIBERAÇÃO</button>
-      <button id="releaseButton" type="button" disabled>LIBERAR EMBARQUE</button>
-      <button id="reviewButton" type="button" disabled>APENAS TREINAR EQUIPE</button>
-      <button id="restartButton" type="button">REINICIAR MISSÃO</button>
+      <button id="startVR" type="button">ENTRAR EM VR NO QUEST 3</button>
+      <button id="stop" type="button" disabled>INTERROMPER LIBERAÇÃO</button>
+      <button id="release" type="button" disabled>LIBERAR LOTE</button>
+      <button id="train" type="button" disabled>APENAS TREINAR A EQUIPE</button>
+      <button id="reset" type="button">REINICIAR INVESTIGAÇÃO</button>
     </div>
-    <p class="hint">Computador: clique e arraste para olhar, W/A/S/D para andar (opcional). VR: fique parado, observe o ambiente e use o laser do controle. Segure o gatilho sobre a peça metálica para aproximá-la e soltá-la.</p>
-    <p class="tiny">Protótipo fictício • Sem dados corporativos • Não determina causa raiz</p>
+    <p class="hint"><strong>Computador:</strong> arraste o mouse para olhar ao redor e clique nos números amarelos. Oculte o painel para ver melhor.<br><strong>Quest 3:</strong> aponte o laser do controle para os números e pressione o gatilho. Aponte para a peça B e mantenha o gatilho para segurá-la.</p>
+    <p class="hint">Cenário fictício. As evidências apontam desvios, não uma causa raiz confirmada.</p>
   </main>
-  <div id="statusbar">Cena de demonstração • Quest 3 / WebXR</div>
+  <button id="reopen" type="button">☰ Abrir missão</button>
+  <div class="corner">Treinamento 3D / WebXR • versão 2</div>
 
   <a-scene id="scene"
-    background="color: #9aaab8"
-    renderer="antialias: true; colorManagement: true"
-    vr-mode-ui="enabled: false"
-    loading-screen="dotsColor: #e15151; backgroundColor: #101923"
-    shadow="type: basic"
-    >
+    background="color:#8a9ca9"
+    renderer="antialias:true; colorManagement:true"
+    vr-mode-ui="enabled:false"
+    loading-screen="backgroundColor:#111c28;dotsColor:#d8434d">
 
-    <a-assets timeout="15000"></a-assets>
+    <a-entity light="type:ambient;intensity:.91;color:#ffffff"></a-entity>
+    <a-entity light="type:directional;intensity:.7;castShadow:true" position="-2 5 4"></a-entity>
+    <a-entity light="type:point;intensity:.45;distance:9;color:#d6ebff" position="2.6 3.7 -1"></a-entity>
 
-    <a-entity light="type: ambient; color: #ffffff; intensity: 0.76"></a-entity>
-    <a-entity light="type: directional; color: #ffffff; intensity: 1.0; castShadow: true" position="-2 5 3"></a-entity>
-    <a-entity light="type: point; color: #d1e9ff; intensity: 0.65; distance: 11" position="3 4 -2"></a-entity>
+    <!-- Estrutura de sala fechada (sem teto aberto). -->
+    <a-plane position="0 0 -1.45" rotation="-90 0 0" width="11" height="9.4" color="#58636a"></a-plane>
+    <a-plane position="0 4.15 -1.45" rotation="90 0 0" width="11" height="9.4" color="#cbd1d1"></a-plane>
+    <a-box position="0 2.08 -5.9" width="11" height="4.16" depth=".15" color="#45545e"></a-box>
+    <a-box position="-5.5 2.08 -1.5" width=".15" height="4.16" depth="9.2" color="#45545e"></a-box>
+    <a-box position="5.5 2.08 -1.5" width=".15" height="4.16" depth="9.2" color="#45545e"></a-box>
+    <a-box position="0 0.02 .35" width="10.7" height=".025" depth=".09" color="#e1bf50"></a-box>
+    <a-box position="0 0.02 .57" width="10.7" height=".025" depth=".045" color="#f5d873"></a-box>
+    <a-box position="-2.5 4.05 -2.4" width="1.9" height=".035" depth=".35" color="#f4f6ed" material="emissive:#dde5e7;emissiveIntensity:.5"></a-box>
+    <a-box position="2.5 4.05 -2.4" width="1.9" height=".035" depth=".35" color="#f4f6ed" material="emissive:#dde5e7;emissiveIntensity:.5"></a-box>
 
-    <!-- Espaço virtual: o usuário permanece em posição inicial estável. -->
-    <a-plane position="0 0 -0.8" rotation="-90 0 0" width="13" height="13" material="color:#535e65; roughness:0.94" shadow="receive:true"></a-plane>
-    <a-plane position="0 0.009 -0.6" rotation="-90 0 0" width="9.8" height="0.14" color="#d6bc55"></a-plane>
-    <a-plane position="0 0.01 -1.0" rotation="-90 0 0" width="9.8" height="0.08" color="#f2cf63"></a-plane>
-    <a-plane position="0 0.01 1.3" rotation="-90 0 0" width="9.8" height="0.06" color="#e1dbcf"></a-plane>
-    <a-box position="0 2.2 -5" width="12.8" height="4.6" depth=".16" material="color:#36444e;roughness:0.9"></a-box>
-    <a-box position="-6.35 2.2 -0.6" width=".15" height="4.6" depth="9" color="#667681"></a-box>
-    <a-box position="6.35 2.2 -0.6" width=".15" height="4.6" depth="9" color="#667681"></a-box>
-    <a-box position="0 0.25 -4.88" width="12.5" height=".48" depth=".07" color="#202e37"></a-box>
-    <a-box position="0 3.98 -4.85" width="12" height=".48" depth=".12" color="#c63d45"></a-box>
-    <a-text value="LABORATORIO DE QUALIDADE | CENARIO FICTICIO" position="-3.85 3.93 -4.77" color="#ffffff" width="7.8" align="center"></a-text>
-    <a-box position="0 3.4 -4.84" width="7" height=".065" depth=".06" color="#d6a74f"></a-box>
-    <a-text value="MISSÃO: IDENTIFICAR EVIDENCIAS" position="-2.4 3.08 -4.74" color="#f4f5f6" width="5.4" align="center"></a-text>
+    <!-- Faixa e título grande, centralizado para não cortar em desktop. -->
+    <a-box position="0 3.65 -5.77" width="10.85" height=".72" depth=".09" color="#a72f39"></a-box>
+    <a-text value="MISSÃO INVESTIGAÇÃO VR" position="0 3.54 -5.69" align="center" anchor="center" width="6.9" color="#ffffff"></a-text>
+    <a-text value="Demonstração de Qualidade | Cenário fictício" position="0 3.12 -5.70" align="center" anchor="center" width="5.8" color="#edf2f4"></a-text>
 
-    <!-- Conjunto de bancada -->
-    <a-box position="0 .94 -1.8" width="3.6" height=".13" depth="1.45" material="color:#8799a4;metalness:.55;roughness:.45" shadow="cast:true"></a-box>
-    <a-box position="-1.55 .46 -2.34" width=".14" height=".9" depth=".15" color="#303941"></a-box>
-    <a-box position="1.55 .46 -2.34" width=".14" height=".9" depth=".15" color="#303941"></a-box>
-    <a-box position="-1.55 .46 -1.3" width=".14" height=".9" depth=".15" color="#303941"></a-box>
-    <a-box position="1.55 .46 -1.3" width=".14" height=".9" depth=".15" color="#303941"></a-box>
-    <a-box position="0 .65 -2.45" width="2.95" height=".12" depth=".06" color="#475661"></a-box>
-    <a-box position="0 1.01 -1.05" width="3.6" height=".14" depth=".07" color="#d7ab46"></a-box>
-    <a-text value="BANCADA DE CONFERENCIA" position="-1.45 1.05 -1.01" width="2.95" color="#17232c" align="center"></a-text>
-
-    <!-- Caixa do pedido A: a peça B está fora da embalagem, para inspeção. -->
-    <a-box position="-.88 1.24 -1.85" width=".99" height=".46" depth=".76" color="#b38b5a" shadow="cast:true"></a-box>
-    <a-box position="-.88 1.48 -1.86" width="1.06" height=".09" depth=".82" color="#c69b65"></a-box>
-    <a-plane position="-.88 1.28 -1.457" width=".78" height=".25" color="#f6f4eb"></a-plane>
-    <a-text value="CAIXA: MODELO A" position="-1.25 1.275 -1.45" width=".75" color="#141e25" align="center"></a-text>
-    <a-text value="INX 001 A" position="-1.24 1.16 -1.45" width=".73" color="#141e25" align="center"></a-text>
-
-    <!-- Peça 3D B. Pegável no Quest mantendo gatilho pressionado. -->
-    <a-box id="partB" class="interativo pegavel" position=".56 1.19 -1.65" width=".66" height=".23" depth=".34"
-      material="color:#8397a6;metalness:.75;roughness:.35" shadow="cast:true">
-      <a-cylinder position="-.2 .118 0" radius=".043" height=".018" color="#17232d"></a-cylinder>
-      <a-cylinder position="0 .118 0" radius=".043" height=".018" color="#17232d"></a-cylinder>
-      <a-cylinder position=".2 .118 0" radius=".043" height=".018" color="#17232d"></a-cylinder>
-      <a-text value="B" width=".3" align="center" color="#17242d" position="-.07 .12 .13" rotation="-90 0 0"></a-text>
-    </a-box>
-    <a-box position=".55 1.055 -1.65" width="1.05" height=".04" depth=".72" color="#264454"></a-box>
-    <a-text value="PEÇA B | INX 002 B" position=".03 1.075 -1.27" width="1.05" color="#fff0cd" align="center"></a-text>
-
-    <!-- Click da evidência 1. -->
-    <a-box id="hot-pedido" class="interativo evidence-target" data-evidence="pedido" position="-.2 1.47 -1.35" width="2.25" height=".72" depth=".16" material="color:#57c2f4;opacity:.07;transparent:true;depthWrite:false"></a-box>
-    <a-circle id="marker-pedido" position="-.2 2.03 -1.25" radius=".17" color="#ffc658" material="shader:flat;side:double"></a-circle>
-    <a-text value="?" position="-.32 1.93 -1.23" color="#102431" width=".27" align="center" font="mozillavr"></a-text>
-    <a-text value="01 | PRODUTO" position="-.85 2.32 -1.38" width="1.3" color="#e1f3ff" align="center"></a-text>
-
-    <!-- Rack e peça reprovada junto a aprovadas. -->
-    <a-entity position="-3.8 0 -3.45">
-      <a-box position="-1.05 1.25 0" width=".11" height="2.5" depth=".2" color="#394b5c"></a-box>
-      <a-box position="1.05 1.25 0" width=".11" height="2.5" depth=".2" color="#394b5c"></a-box>
-      <a-box position="0 .6 0" width="2.2" height=".09" depth=".78" color="#91a0aa"></a-box>
-      <a-box position="0 1.27 0" width="2.2" height=".09" depth=".78" color="#91a0aa"></a-box>
-      <a-box position="0 1.94 0" width="2.2" height=".09" depth=".78" color="#91a0aa"></a-box>
-      <a-plane position="0 2.34 .17" width="2.1" height=".37" color="#2a805b"></a-plane>
-      <a-text value="PECAS APROVADAS" position="-1 2.27 .21" color="#fff" width="2" align="center"></a-text>
-      <a-box position="-.65 1.56 .12" width=".53" height=".45" depth=".48" color="#ad8e60"></a-box>
-      <a-box position=".05 1.56 .12" width=".53" height=".45" depth=".48" color="#ad8e60"></a-box>
-      <a-box position=".73 1.57 .12" width=".52" height=".48" depth=".48" color="#b48d61"></a-box>
-      <a-plane position=".73 1.57 .368" width=".47" height=".3" color="#f3e2d6"></a-plane>
-      <a-text value="REPROVADA" position=".51 1.55 .381" width=".45" color="#bd293d" align="center"></a-text>
-      <a-box position="-.6 .91 .1" width=".58" height=".45" depth=".48" color="#ad8e60"></a-box>
-      <a-box position=".2 .91 .1" width=".58" height=".45" depth=".48" color="#ad8e60"></a-box>
-    </a-entity>
-    <a-box id="hot-segregacao" class="interativo evidence-target" data-evidence="segregacao" position="-3.05 1.54 -3.01" width=".68" height=".65" depth=".2" material="color:#57c2f4;opacity:.07;transparent:true;depthWrite:false"></a-box>
-    <a-circle id="marker-segregacao" position="-3.0 2.05 -2.95" radius=".17" color="#ffc658" material="shader:flat;side:double"></a-circle>
-    <a-text value="?" position="-3.12 1.96 -2.93" color="#102431" width=".27" align="center"></a-text>
-    <a-text value="02 | SEGREGACAO" position="-4.4 2.64 -2.93" width="2.15" color="#e1f3ff" align="center"></a-text>
-
-    <!-- Área de expedição. -->
-    <a-box position="3 0.79 -1.85" width="2.15" height="1.55" depth="1.25" color="#596a70"></a-box>
-    <a-box position="3 1.59 -1.85" width="2.27" height=".15" depth="1.37" color="#758b99"></a-box>
-    <a-box position="2.7 1.87 -2.04" width="1.15" height=".42" depth=".7" color="#bc9160"></a-box>
-    <a-plane position="2.7 1.85 -1.685" width=".98" height=".26" color="#f6f4ea"></a-plane>
-    <a-text value="ETIQUETA: A" position="2.22 1.82 -1.66" color="#19232d" width=".95" align="center"></a-text>
-    <a-box position="3.58 1.96 -1.88" width=".65" height=".035" depth=".49" color="#e2e8eb"></a-box>
-    <a-text value="REGISTRO\nITEM: B" position="3.36 1.96 -1.62" color="#16222d" width=".44" align="center"></a-text>
-    <a-box id="hot-expedicao" class="interativo evidence-target" data-evidence="expedicao" position="2.97 1.86 -1.48" width="1.85" height=".6" depth=".16" material="color:#57c2f4;opacity:.07;transparent:true;depthWrite:false"></a-box>
-    <a-circle id="marker-expedicao" position="2.9 2.44 -1.42" radius=".17" color="#ffc658" material="shader:flat;side:double"></a-circle>
-    <a-text value="?" position="2.78 2.345 -1.40" color="#102431" width=".27" align="center"></a-text>
-    <a-text value="03 | EXPEDICAO" position="2.05 2.77 -1.38" width="1.85" color="#e1f3ff" align="center"></a-text>
-
-    <!-- Quadro de registros com textos visíveis no ambiente. -->
-    <a-plane position="-1.55 2.35 -4.75" width="1.9" height="1.08" color="#e6e6df"></a-plane>
-    <a-text value="PEDIDO CLIENTE\nMODELO: A\nCODIGO: INX 001 A" position="-2.42 2.68 -4.71" width="1.75" color="#24313c" line-height="58"></a-text>
-    <a-plane position=".65 2.35 -4.75" width="1.95" height="1.08" color="#dce9ef"></a-plane>
-    <a-text value="ORDEM DE PRODUCAO\nMODELO: A\nLOTE: FICTICIO 24" position="-.22 2.67 -4.71" width="1.75" color="#24313c" line-height="58"></a-text>
-
-    <!-- Painel em ambiente: textos são atualizados pelo JavaScript. -->
-    <a-entity id="missionBoard" position="3.3 2.56 -4.71">
-      <a-plane width="4.3" height="2.25" color="#111f2b" material="opacity:.97;transparent:true"></a-plane>
-      <a-plane position="0 1.02 .018" width="4.3" height=".21" color="#cf4750"></a-plane>
-      <a-text value="CENTRAL DE QUALIDADE" position="-1.92 .76 .04" width="3.9" color="#ffffff"></a-text>
-      <a-text id="boardCounter" value="EVIDENCIAS: 0 / 3" position="-1.92 .42 .04" width="3.1" color="#ffcf7b"></a-text>
-      <a-text id="boardMessage" value="INVESTIGUE OS TRES PONTOS\nMARCADOS COM ?\n\nAPONTE E CLIQUE." position="-1.92 .16 .04" width="3.77" color="#d8e9f4" wrap-count="49" line-height="62"></a-text>
+    <!-- Estação 1: bancada de conferência, produto e peça divergente -->
+    <a-entity id="station1">
+      <a-box position="0 .96 -1.87" width="3.55" height=".13" depth="1.48" color="#8f9fa8" shadow="cast:true"></a-box>
+      <a-box position="-1.53 .46 -2.43" width=".13" height=".9" depth=".13" color="#36434b"></a-box>
+      <a-box position="1.53 .46 -2.43" width=".13" height=".9" depth=".13" color="#36434b"></a-box>
+      <a-box position="-1.53 .46 -1.28" width=".13" height=".9" depth=".13" color="#36434b"></a-box>
+      <a-box position="1.53 .46 -1.28" width=".13" height=".9" depth=".13" color="#36434b"></a-box>
+      <a-box position="0 1.03 -1.10" width="3.58" height=".18" depth=".075" color="#c99d3f"></a-box>
+      <a-box position="-.81 1.28 -1.89" width="1.04" height=".49" depth=".72" color="#ab8656" shadow="cast:true"></a-box>
+      <a-box position="-.81 1.56 -1.9" width="1.10" height=".08" depth=".78" color="#c39b69"></a-box>
+      <a-plane position="-.81 1.29 -1.522" width=".86" height=".27" color="#ffffff"></a-plane>
+      <a-text value="CAIXA A" position="-.81 1.22 -1.502" width=".76" align="center" anchor="center" color="#1a252e"></a-text>
+      <a-box id="partB" class="interativo pegavel" position=".55 1.19 -1.72" width=".72" height=".23" depth=".39" material="color:#a6b8c4;metalness:.67;roughness:.36">
+        <a-cylinder position="-.22 .123 0" radius=".047" height=".01" color="#263b49"></a-cylinder>
+        <a-cylinder position="0 .123 0" radius=".047" height=".01" color="#263b49"></a-cylinder>
+        <a-cylinder position=".22 .123 0" radius=".047" height=".01" color="#263b49"></a-cylinder>
+        <a-box position="0 -.10 -.21" width=".72" height=".08" depth=".03" color="#8397a7"></a-box>
+      </a-box>
+      <a-plane position=".55 1.09 -1.21" width="1.18" height=".18" color="#1d3948"></a-plane>
+      <a-text value="PEÇA B | INX 002 B" position=".55 1.04 -1.19" color="#ffffff" width="1.08" anchor="center" align="center"></a-text>
+      <a-text value="1. PRODUTO / EMBALAGEM" position="0 2.19 -2.97" width="3.3" anchor="center" align="center" color="#ffffff"></a-text>
+      <a-circle id="marker-pedido" data-evidence="pedido" class="interativo evidence-target" position="0 1.78 -1.2" radius=".22" material="color:#ffd05f;shader:flat;side:double">
+        <a-text value="1" position="0 -.103 .02" width=".44" anchor="center" align="center" color="#17212c"></a-text>
+      </a-circle>
     </a-entity>
 
-    <!-- Decisões no próprio cenário; devem funcionar com o laser dos controles. -->
-    <a-entity id="vrControls" position="3.28 1.04 -4.58">
-      <a-box id="btn-vr-stop" class="interativo vr-choice" data-choice="stop" position="-1.32 .0 0" width="1.23" height=".32" depth=".09" color="#2b8c63"></a-box>
-      <a-text value="INTERROMPER" position="-1.9 -.055 .055" width="1.16" color="#ffffff" align="center"></a-text>
-      <a-box id="btn-vr-release" class="interativo vr-choice" data-choice="release" position="0 .0 0" width="1.23" height=".32" depth=".09" color="#bc3e45"></a-box>
-      <a-text value="LIBERAR" position="-.54 -.055 .055" width="1.12" color="#ffffff" align="center"></a-text>
-      <a-box id="btn-vr-review" class="interativo vr-choice" data-choice="review" position="1.32 .0 0" width="1.23" height=".32" depth=".09" color="#4a6174"></a-box>
-      <a-text value="TREINAR" position=".8 -.055 .055" width="1.12" color="#ffffff" align="center"></a-text>
-      <a-box id="btn-vr-restart" class="interativo" position="0 -.46 0" width="2.1" height=".29" depth=".08" color="#52626d"></a-box>
-      <a-text value="REINICIAR MISSAO" position="-1 -.515 .055" width="2" color="#ffffff" align="center"></a-text>
+    <!-- Estação 2: segregação de material aprovado x reprovado -->
+    <a-entity id="station2" position="-2.95 0 -3.55">
+      <a-box position="-1.03 1.25 0" width=".11" height="2.5" depth=".13" color="#273d4a"></a-box>
+      <a-box position="1.03 1.25 0" width=".11" height="2.5" depth=".13" color="#273d4a"></a-box>
+      <a-box position="0 .64 0" width="2.19" height=".095" depth=".73" color="#b6c0c7"></a-box>
+      <a-box position="0 1.33 0" width="2.19" height=".095" depth=".73" color="#b6c0c7"></a-box>
+      <a-box position="0 2.03 0" width="2.19" height=".095" depth=".73" color="#b6c0c7"></a-box>
+      <a-box position="0 2.46 .12" width="2.13" height=".4" depth=".06" color="#19784e"></a-box>
+      <a-text value="PEÇAS APROVADAS" position="0 2.36 .17" color="#fff" width="2.05" align="center" anchor="center"></a-text>
+      <a-box position="-.56 1.69 .09" width=".58" height=".53" depth=".49" color="#b08b59"></a-box>
+      <a-box position=".26 1.69 .09" width=".58" height=".53" depth=".49" color="#b08b59"></a-box>
+      <a-plane position=".26 1.69 .347" width=".53" height=".32" color="#ffffff"></a-plane>
+      <a-text value="REPROVADA" position=".26 1.63 .368" width=".51" align="center" anchor="center" color="#ad2435"></a-text>
+      <a-box position="-.56 1.02 .08" width=".58" height=".43" depth=".49" color="#b08b59"></a-box>
+      <a-box position=".26 1.02 .08" width=".58" height=".43" depth=".49" color="#b08b59"></a-box>
+    </a-entity>
+    <a-circle id="marker-segregacao" class="interativo evidence-target" data-evidence="segregacao" position="-2.58 2.08 -2.98" radius=".22" material="color:#ffd05f;shader:flat;side:double">
+      <a-text value="2" position="0 -.103 .02" width=".44" color="#17212c" align="center" anchor="center"></a-text>
+    </a-circle>
+
+    <!-- Estação 3: expedição, etiqueta divergente dos registros -->
+    <a-entity id="station3" position="2.95 0 -2.73">
+      <a-box position="0 .81 0" width="1.87" height="1.62" depth="1.02" color="#6e818a"></a-box>
+      <a-box position="0 1.64 0" width="2.15" height=".12" depth="1.17" color="#abb9bd"></a-box>
+      <a-box position="-.37 1.95 -.1" width="1.08" height=".46" depth=".65" color="#ba9464"></a-box>
+      <a-plane position="-.37 1.98 .235" width=".89" height=".28" color="#fffef6"></a-plane>
+      <a-text value="ETIQUETA A" position="-.37 1.91 .252" width=".83" align="center" anchor="center" color="#16222b"></a-text>
+      <a-box position=".53 1.75 -.03" width=".60" height=".02" depth=".51" color="#eff1f4"></a-box>
+      <a-plane position=".53 1.99 -.09" width=".60" height=".36" color="#ffffff"></a-plane>
+      <a-text value="REGISTRO B" position=".53 1.92 -.06" width=".58" color="#182431" align="center" anchor="center"></a-text>
+    </a-entity>
+    <a-circle id="marker-expedicao" class="interativo evidence-target" data-evidence="expedicao" position="2.9 2.48 -2.07" radius=".22" material="color:#ffd05f;shader:flat;side:double">
+      <a-text value="3" position="0 -.103 .02" width=".44" color="#17212c" align="center" anchor="center"></a-text>
+    </a-circle>
+
+    <!-- Painel tridimensional, presente mesmo quando o painel HTML some no VR. -->
+    <a-entity id="board" position="2.85 2.56 -4.54" rotation="0 -18 0">
+      <a-plane width="3.4" height="1.78" color="#152a39"></a-plane>
+      <a-plane position="0 .78 .02" width="3.4" height=".22" color="#bd3c47"></a-plane>
+      <a-text value="CENTRAL DA QUALIDADE" position="0 .69 .06" width="2.92" anchor="center" align="center" color="#ffffff"></a-text>
+      <a-text id="boardCount" value="0 / 3 EVIDÊNCIAS" position="0 .26 .06" width="2.64" color="#ffdc83" anchor="center" align="center"></a-text>
+      <a-text id="boardLine1" value="INSPECIONE OS 3 PONTOS" position="0 -.10 .06" width="3.00" color="#ffffff" anchor="center" align="center"></a-text>
+      <a-text id="boardLine2" value="MARCADORES AMARELOS" position="0 -.41 .06" width="3.00" color="#b7dbe9" anchor="center" align="center"></a-text>
     </a-entity>
 
-    <!-- Rig/câmera. Movimento artificial desabilitado em VR. -->
-    <a-entity id="player" position="0 0 2.65">
-      <a-entity id="camera" camera look-controls="pointerLockEnabled:false" wasd-controls="acceleration:18" position="0 1.6 0">
-        <a-entity id="mouseCursor" cursor="rayOrigin:mouse" raycaster="objects:.interativo;far:12"></a-entity>
+    <!-- Botões físicos no ambiente, usados com o laser. -->
+    <a-entity id="decisionPanel" position="2.87 1.06 -3.62" rotation="0 -18 0">
+      <a-box class="interativo vr-choice" data-choice="stop" position="-1.04 0 0" width=".98" height=".45" depth=".10" color="#167855"></a-box>
+      <a-text value="INTERROMPER" position="-1.04 -.064 .062" width=".9" align="center" anchor="center" color="#fff"></a-text>
+      <a-box class="interativo vr-choice" data-choice="release" position="0 0 0" width=".98" height=".45" depth=".10" color="#a52e3c"></a-box>
+      <a-text value="LIBERAR" position="0 -.064 .062" width=".88" align="center" anchor="center" color="#fff"></a-text>
+      <a-box class="interativo vr-choice" data-choice="train" position="1.04 0 0" width=".98" height=".45" depth=".10" color="#506a80"></a-box>
+      <a-text value="TREINAR" position="1.04 -.064 .062" width=".86" align="center" anchor="center" color="#fff"></a-text>
+      <a-box id="restart3D" class="interativo" position="0 -.53 0" width="2.3" height=".29" depth=".09" color="#51616d"></a-box>
+      <a-text value="REINICIAR MISSÃO" position="0 -.59 .062" width="1.72" align="center" anchor="center" color="#ffffff"></a-text>
+    </a-entity>
+
+    <!-- Posição inicial sem deslocamento automático. -->
+    <a-entity id="player" position="0 0 1.48">
+      <a-entity id="camera" camera position="0 1.65 0" look-controls="pointerLockEnabled:false" wasd-controls="acceleration:17">
+        <a-entity cursor="rayOrigin:mouse" raycaster="objects:.interativo;far:12"></a-entity>
       </a-entity>
-      <a-entity id="leftController" laser-controls="hand:left" raycaster="objects:.interativo;far:12" hand-grab></a-entity>
-      <a-entity id="rightController" laser-controls="hand:right" raycaster="objects:.interativo;far:12" hand-grab></a-entity>
+      <a-entity laser-controls="hand:left" raycaster="objects:.interativo;far:12" hand-grab></a-entity>
+      <a-entity laser-controls="hand:right" raycaster="objects:.interativo;far:12" hand-grab></a-entity>
     </a-entity>
   </a-scene>
-
   <script>
     'use strict';
-    // ---------- CONFIGURAÇÃO DA MISSÃO: textos e regras editáveis ----------
-    const EVIDENCES = {
+    const evidence = {
       pedido: {
-        name: 'Peça e identificação da caixa',
-        message: 'EVIDÊNCIA 1: a embalagem indica modelo A (INX 001 A), mas a peça examinada é modelo B (INX 002 B). Há divergência entre identificação e conteúdo.'
+        msg: 'EVIDÊNCIA 1: a caixa está identificada como modelo A, mas a peça em inspeção é modelo B. Existe divergência entre o conteúdo e a identificação.',
+        b1: 'EVIDÊNCIA 1 REGISTRADA', b2: 'CAIXA A / PEÇA B'
       },
       segregacao: {
-        name: 'Segregação na prateleira',
-        message: 'EVIDÊNCIA 2: um volume marcado REPROVADA está armazenado na área identificada como PEÇAS APROVADAS. A segregação observada é inadequada.'
+        msg: 'EVIDÊNCIA 2: há material identificado como REPROVADA na prateleira de PEÇAS APROVADAS. A segregação precisa ser controlada.',
+        b1: 'EVIDÊNCIA 2 REGISTRADA', b2: 'SEGREGAÇÃO INADEQUADA'
       },
       expedicao: {
-        name: 'Conferência na expedição',
-        message: 'EVIDÊNCIA 3: a etiqueta de expedição indica A, enquanto o registro apresentado indica B. A divergência exige conferência antes da liberação.'
+        msg: 'EVIDÊNCIA 3: a etiqueta da expedição indica A, mas o registro disponível informa B. O lote não deve ser liberado sem esclarecer a divergência.',
+        b1: 'EVIDÊNCIA 3 REGISTRADA', b2: 'DIVERGÊNCIA DE REGISTRO'
       }
     };
-    const $ = id => document.getElementById(id);
-    const state = {found: new Set(), finished:false, holding:false};
-    const DEFAULT_MESSAGE = 'Use o mouse para olhar ao redor e clique nas áreas com o símbolo ?. Em VR, aponte o controle e pressione o gatilho.';
-    let audioContext;
-
-    function sound(frequency=650) {
-      // Som opcional e discreto, somente após interação explícita.
-      try {
-        audioContext = audioContext || new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        osc.type='sine'; osc.frequency.value=frequency;
-        gain.gain.setValueAtTime(.0001,audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(.07,audioContext.currentTime+.015);
-        gain.gain.exponentialRampToValueAtTime(.0001,audioContext.currentTime+.11);
-        osc.connect(gain).connect(audioContext.destination);
-        osc.start(); osc.stop(audioContext.currentTime+.12);
-      } catch (_) { /* áudio não é indispensável */ }
-    }
-
-    function message(txt) { $('message').textContent = txt; }
-    function board(txt) { $('boardMessage').setAttribute('value', txt); }
-    function updateCounter(){
-      const n = state.found.size;
-      $('progressLabel').textContent = `${n} de 3 evidências identificadas`;
-      $('fill').style.width = `${n/3*100}%`;
-      $('boardCounter').setAttribute('value', `EVIDENCIAS: ${n} / 3`);
-      Object.keys(EVIDENCES).forEach((id,index)=>{
-        const done = state.found.has(id);
-        $('ev-'+id).classList.toggle('done',done);
-        $('ev-'+id).querySelector('.bullet').textContent = done ? '✓' : String(index+1);
-        $('marker-'+id).setAttribute('color', done ? '#50dca1':'#ffc658');
+    const $=id=>document.getElementById(id);
+    const found = new Set();
+    let finished=false;
+    const origin = {x:.55,y:1.19,z:-1.72};
+    let activeGrabber=null;
+    function say(text){$('message').textContent=text;}
+    function status(line1,line2){$('boardLine1').setAttribute('value',line1);$('boardLine2').setAttribute('value',line2);}
+    function update(){
+      const size=found.size;
+      $('countText').textContent=`${size} de 3 evidências`;
+      $('fill').style.width=`${size/3*100}%`;
+      $('boardCount').setAttribute('value',`${size} / 3 EVIDÊNCIAS`);
+      Object.keys(evidence).forEach((id,i)=>{
+        const done=found.has(id);
+        $('e-'+id).classList.toggle('done',done);
+        $('e-'+id).querySelector('.num').textContent=done?'✓':String(i+1);
+        $('marker-'+id).setAttribute('material','color',done?'#57d79f':'#ffd05f');
       });
-      const ready = n === 3 && !state.finished;
-      ['stopButton','releaseButton','reviewButton'].forEach(id=>{$(id).disabled=!ready;});
+      for(const id of ['stop','release','train']) $(id).disabled=(size!==3||finished);
     }
     function collect(id){
-      if(state.finished) return;
-      const evidence=EVIDENCES[id]; if(!evidence)return;
-      if(state.found.has(id)) {
-        message(evidence.message); board('EVIDENCIA JA REGISTRADA\n\n' + evidence.name.toUpperCase());
-        return;
-      }
-      state.found.add(id); sound(); updateCounter(); message(evidence.message);
-      if(state.found.size === 3) {
-        message(evidence.message+'\n\nTrês evidências registradas. Agora escolha uma ação para o lote.');
-        board('3 EVIDENCIAS REGISTRADAS!\n\nDECIDA SOBRE O LOTE:\nINTERROMPER / LIBERAR / TREINAR');
-      } else {
-        board(`EVIDENCIA ${state.found.size} REGISTRADA\n\n${evidence.name.toUpperCase()}\n\nCONTINUE INVESTIGANDO.`);
-      }
+      if(finished||!evidence[id])return;
+      if(!found.has(id)) found.add(id);
+      update();
+      say(evidence[id].msg+(found.size===3?'\n\nAs três evidências foram registradas. Agora escolha uma decisão para o lote.':''));
+      if(found.size===3) status('3 EVIDÊNCIAS REGISTRADAS','QUAL A DECISÃO SEGURA?');
+      else status(evidence[id].b1,evidence[id].b2);
     }
     function decide(choice){
-      if (state.finished) return;
-      if(state.found.size !== 3){
-        sound(240); message('Antes de decidir, identifique as três evidências no ambiente.');
-        board('DECISAO AINDA BLOQUEADA\n\nENCONTRE 3 EVIDENCIAS.');
-        return;
+      if(finished)return;
+      if(found.size!==3){
+        say('Decisão bloqueada: investigue os três pontos antes de agir.');
+        status('DECISÃO BLOQUEADA','LOCALIZE AS 3 EVIDÊNCIAS');return;
       }
-      if (choice==='stop'){
-        state.finished=true; sound(890);
-        message('ESCOLHA CORRETA! Interromper a liberação e garantir a identificação/segregação do lote é a decisão segura diante das divergências observadas.\n\nPróxima etapa: registrar o desvio, conter o risco e investigar as causas. As evidências não comprovam, isoladamente, uma causa raiz.');
-        board('MISSAO CONCLUIDA!\n\nLIBERACAO INTERROMPIDA.\n\nREGISTRAR / CONTER / INVESTIGAR\n\nCAUSA RAIZ NAO CONFIRMADA.');
-        updateCounter();
-        return;
-      }
-      sound(230);
-      if(choice==='release'){
-        message('REAVALIE SUA ESCOLHA. As divergências entre produto, etiqueta e registros não permitem liberar o lote sem esclarecimento e controle do risco.');
-        board('LIBERACAO NAO SEGURA\n\nAS DIVERGENCIAS EXIGEM UMA ACAO DE CONTENCAO.');
+      if(choice==='stop'){
+        finished=true;
+        say('ESCOLHA CORRETA! Interromper a liberação evita que a divergência conhecida siga para o cliente. Próximos passos: conter e identificar o lote, registrar o desvio e investigar as causas. As evidências ainda não comprovam causa raiz.');
+        status('ESCOLHA CORRETA','CONTER • REGISTRAR • INVESTIGAR');
+      } else if(choice==='release'){
+        say('REAVALIE: liberar o lote sem esclarecer as divergências pode enviar novamente o item incorreto ao cliente.');
+        status('LIBERAÇÃO INADEQUADA','REAVALIE A DECISÃO');
       } else {
-        message('REAVALIE SUA ESCOLHA. Treinamento pode ser uma ação futura, mas sozinho não substitui a contenção imediata nem comprova a causa do problema.');
-        board('TREINAMENTO ISOLADO?\n\nANTES, PROTEJA O PROCESSO E INVESTIGUE AS CAUSAS.');
+        say('REAVALIE: o treinamento pode ser necessário posteriormente, mas não substitui a contenção do produto nem a investigação da causa.');
+        status('TREINAMENTO ISOLADO','NÃO CONTÉM O DESVIO');
       }
+      update();
     }
-    const PART_ORIGIN = {x:.56,y:1.19,z:-1.65};
     function reset(){
-      state.found.clear();state.finished=false;state.holding=false;
-      const part=$('partB'); part.object3D.position.set(PART_ORIGIN.x,PART_ORIGIN.y,PART_ORIGIN.z);
-      part.object3D.rotation.set(0,0,0); part.classList.add('interativo');
-      message(DEFAULT_MESSAGE); board('INVESTIGUE OS TRES PONTOS\nMARCADOS COM ?\n\nAPONTE E CLIQUE.');
-      updateCounter(); sound(490);
+      if(activeGrabber)activeGrabber.drop();
+      finished=false;found.clear();
+      const part=$('partB');
+      part.object3D.position.set(origin.x,origin.y,origin.z);
+      part.object3D.rotation.set(0,0,0);
+      part.classList.add('interativo');
+      say('Investigue novamente: clique nos marcadores amarelos 1, 2 e 3.');
+      status('INSPECIONE OS 3 PONTOS','MARCADORES AMARELOS');
+      update();
     }
-
-    // ---------- Pegada e inspeção da peça usando gatilho dos controles ----------
-    // Demonstração 3D: a peça acompanha o controle enquanto o gatilho está pressionado.
-    // Ao soltar, ela retorna à posição original; não há simulação física ou colisões.
+    // Experiência de segurar a peça: controle apontado + gatilho pressionado.
+    // Ao soltar, a peça retorna; não há física nem validação dimensional simulada.
     AFRAME.registerComponent('hand-grab',{
       init:function(){
-        this.held = null;
-        this.handPoint = new THREE.Vector3();
-        this.scenePoint = new THREE.Vector3();
+        this.held=null;
+        this.grabPoint=new THREE.Vector3();
+        this.scenePoint=new THREE.Vector3();
         this.el.addEventListener('triggerdown',()=>{
-          if(this.held || state.finished)return;
-          const caster = this.el.components.raycaster;
-          const targets = caster ? caster.intersectedEls : [];
-          const part = targets.find(entity=>entity.classList.contains('pegavel'));
-          if(!part) return;
-          this.held=part; state.holding=true;
+          if(this.held||activeGrabber||finished)return;
+          const ray=this.el.components.raycaster;
+          const part=ray?.intersectedEls?.find(e=>e.classList.contains('pegavel'));
+          if(!part)return;
+          this.held=part;activeGrabber=this;
           part.classList.remove('interativo');
           collect('pedido');
-          message('PEÇA B EM INSPEÇÃO. Mantenha o gatilho pressionado para aproximar e observar a peça em 3D. Solte para devolvê-la à bancada.');
+          say('PEÇA B EM INSPEÇÃO. Mantenha o gatilho pressionado para observá-la. Ao soltar, a peça retorna à bancada.');
         });
         this.el.addEventListener('triggerup',()=>this.drop());
         this.el.sceneEl.addEventListener('exit-vr',()=>this.drop());
       },
       tick:function(){
         if(!this.held)return;
-        this.handPoint.set(0,-.05,-.32);
-        this.el.object3D.localToWorld(this.handPoint);
-        this.scenePoint.copy(this.handPoint);
+        this.grabPoint.set(0,-.05,-.35);
+        this.el.object3D.localToWorld(this.grabPoint);
+        this.scenePoint.copy(this.grabPoint);
         this.el.sceneEl.object3D.worldToLocal(this.scenePoint);
         this.held.object3D.position.copy(this.scenePoint);
       },
       drop:function(){
         if(!this.held)return;
-        this.held.object3D.position.set(PART_ORIGIN.x,PART_ORIGIN.y,PART_ORIGIN.z);
+        this.held.object3D.position.set(origin.x,origin.y,origin.z);
         this.held.classList.add('interativo');
-        this.held=null;state.holding=false;
+        this.held=null;if(activeGrabber===this)activeGrabber=null;
       }
     });
-
     window.addEventListener('DOMContentLoaded',()=>{
-      // Desktop: clique na peça para examinar; em VR, segure o gatilho para movimentá-la.
       document.querySelectorAll('.evidence-target').forEach(el=>el.addEventListener('click',()=>collect(el.dataset.evidence)));
       $('partB').addEventListener('click',()=>collect('pedido'));
       document.querySelectorAll('.vr-choice').forEach(el=>el.addEventListener('click',()=>decide(el.dataset.choice)));
-      $('btn-vr-restart').addEventListener('click',reset);
-      $('stopButton').addEventListener('click',()=>decide('stop'));
-      $('releaseButton').addEventListener('click',()=>decide('release'));
-      $('reviewButton').addEventListener('click',()=>decide('review'));
-      $('restartButton').addEventListener('click',reset);
-      $('vrButton').addEventListener('click',()=>{
-        const scene=$('scene');
-        if(!navigator.xr){
-          message('Este navegador não disponibiliza WebXR. Abra o link no navegador do Meta Quest 3 para entrar em VR. No computador, a cena 3D continua disponível.');return;
-        }
-        // Precisa ser invocado diretamente pelo clique do usuário.
-        scene.enterVR();
+      $('restart3D').addEventListener('click',reset);
+      $('stop').addEventListener('click',()=>decide('stop'));
+      $('release').addEventListener('click',()=>decide('release'));
+      $('train').addEventListener('click',()=>decide('train'));
+      $('reset').addEventListener('click',reset);
+      $('minimize').addEventListener('click',()=>document.body.classList.add('panel-hidden'));
+      $('reopen').addEventListener('click',()=>document.body.classList.remove('panel-hidden'));
+      $('startVR').addEventListener('click',()=>{
+        if(!navigator.xr){say('Este navegador não informou suporte a VR WebXR. No computador, continue em 3D. Para imersão, abra o endereço HTTPS no Meta Quest Browser.');return;}
+        $('scene').enterVR();
       });
-      $('scene').addEventListener('enter-vr',()=>document.body.classList.add('vr-active'));
-      $('scene').addEventListener('exit-vr',()=>document.body.classList.remove('vr-active'));
-      // Desativar WASD no headset: evita deslocamento artificial involuntário.
-      $('scene').addEventListener('enter-vr',()=>{$('camera').setAttribute('wasd-controls','enabled',false);});
-      $('scene').addEventListener('exit-vr',()=>{$('camera').setAttribute('wasd-controls','enabled',true);});
-      updateCounter();
+      $('scene').addEventListener('enter-vr',()=>{
+        document.body.classList.add('vr-active');
+        $('camera').setAttribute('wasd-controls','enabled',false);
+      });
+      $('scene').addEventListener('exit-vr',()=>{
+        document.body.classList.remove('vr-active');
+        $('camera').setAttribute('wasd-controls','enabled',true);
+      });
+      update();
     });
   </script>
 </body>
